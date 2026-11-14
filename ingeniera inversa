@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La era de los ports — Ingeniería Inversa en los Videojuegos</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link reya estal="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome para iconos técnicos y gamer -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        cyber: {
+                            bg: '#07090e',
+                            card: '#0d111a',
+                            border: '#1c2536',
+                            green: '#10b981',
+                            cyan: '#06b6d4',
+                            neonGreen: '#00ff9d',
+                            neonCyan: '#00e5ff'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#07090e] text-slate-200 font-sans antialiased selection:bg-emerald-500/30 selection:text-emerald-300 overflow-x-hidden">
+
+    <!-- Fondo decorativo estilo rejilla técnica y resplandores -->
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[45%] h-[45%] rounded-full bg-emerald-500/10 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[45%] h-[45%] rounded-full bg-cyan-500/10 blur-[120px]"></div>
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20"></div>
+    </div>
+
+    <!-- Barra de Navegación Superior -->
+    <header class="sticky top-0 z-40 backdrop-blur-md bg-[#07090e]/80 border-b border-slate-800/80">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 p-[1px] shadow-lg shadow-emerald-500/20">
+                    <div class="w-full h-full bg-[#0d111a] rounded-[11px] flex items-center justify-center text-emerald-400">
+                        <i class="fa-solid fa-microchip text-base"></i>
+                    </div>
+                </div>
+                <span class="font-bold tracking-tight text-white text-lg">La era de los <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">ports</span></span>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400">
+                <a href="#intro" class="hover:text-emerald-400 transition-colors">¿Qué es?</a>
+                <a href="#pilares" class="hover:text-emerald-400 transition-colors">Pilares Técnicos</a>
+                <a href="#ports" class="hover:text-cyan-400 transition-colors">Ports Destacados</a>
+                <a href="#legal" class="hover:text-amber-400 transition-colors">Aviso BYOG</a>
+            </nav>
+
+            <!-- Botón para copiar el código HTML puro (ideal para Webnode) -->
+            <button id="copyHtmlBtn" onclick="copyFullHtml()" class="group relative inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-emerald-500/40 hover:border-emerald-400 text-xs sm:text-sm font-mono font-medium text-emerald-300 transition-all shadow-lg shadow-emerald-500/10 active:scale-95">
+                <i class="fa-solid fa-code text-emerald-400 group-hover:rotate-12 transition-transform"></i>
+                <span>Copiar HTML Webnode</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Notificación Toast para copiado / mensajes -->
+    <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#0d111a] border border-emerald-500/50 shadow-2xl shadow-emerald-500/20 text-sm text-white">
+            <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <div>
+                <p id="toastTitle" class="font-semibold text-emerald-300">¡Código HTML copiado!</p>
+                <p id="toastMessage" class="text-xs text-slate-400">Listo para pegar en un bloque HTML de Webnode.</p>
+            </div>
+        </div>
+    </div>
+
+    <main class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-20">
+
+        <!-- 1. SECCIÓN HERO / ENCABEZADO PRINCIPAL -->
+        <section id="intro" class="relative rounded-3xl bg-gradient-to-b from-[#0f1623] to-[#0a0e17] border border-slate-800/90 p-6 sm:p-10 lg:p-14 shadow-2xl overflow-hidden">
+            <!-- Detalle visual esquina superior -->
+            <div class="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-cyan-500/15 via-emerald-500/5 to-transparent rounded-bl-full pointer-events-none"></div>
+            
+            <div class="relative z-10 max-w-4xl">
+                <!-- Etiqueta superior estilo consola -->
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs mb-6">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>ARQUITECTURA NATIVA // DECOMPILACIÓN &amp; RECOMPILACIÓN</span>
+                </div>
+
+                <!-- Título Principal -->
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-4">
+                    La era de los <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">ports</span>
+                </h1>
+
+                <!-- Subtítulo / Tema principal -->
+                <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-100 mb-6 flex items-center gap-3">
+                    <span class="w-1.5 h-7 rounded-full bg-gradient-to-b from-emerald-400 to-cyan-400 inline-block shrink-0"></span>
+                    ¿Qué es la Ingeniería Inversa en los Videojuegos?
+                </h2>
+
+                <!-- Descripción principal exacta -->
+                <p class="text-base sm:text-lg text-slate-300 leading-relaxed mb-8 bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 sm:p-6">
+                    Es el proceso técnico de analizar el archivo compilado de un juego ya terminado (<span class="text-cyan-300 font-mono text-sm">código máquina o binario</span>) mediante herramientas de desensamblado (como <span class="text-emerald-300 font-semibold">Ghidra</span> o <span class="text-emerald-300 font-semibold">IDA Pro</span>) para deducir cómo funciona su arquitectura interna, gestión de memoria e instrucciones gráficas, logrando reescribir su motor en lenguajes modernos (<span class="text-cyan-300 font-mono text-sm">C/C++</span>) sin tener acceso al código fuente original de los desarrolladores.
+                </p>
+
+                <!-- Insignias técnicas interactivas -->
+                <div class="space-y-3">
+                    <p class="text-xs font-mono uppercase tracking-wider text-slate-400">Stack Tecnológico &amp; Herramientas Clave (Haz clic para inspeccionar):</p>
+                    <div class="flex flex-wrap gap-2.5" id="badgeContainer">
+                        <button type="button" onclick="showBadgeInfo('Ghidra', 'Framework de ingeniería inversa de código abierto desarrollado por la NSA para desensamblar y analizar binarios compilados.')" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-emerald-950/50 border border-slate-700 hover:border-emerald-400 text-xs font-mono text-emerald-300 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-dragon text-emerald-400"></i> Ghidra
+                        </button>
+                        <button type="button" onclick="showBadgeInfo('IDA Pro', 'Desensamblador y depurador interactivo estándar de la industria para mapear subrutinas y estructuras de memoria en ejecutables.')" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-emerald-950/50 border border-slate-700 hover:border-emerald-400 text-xs font-mono text-emerald-300 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-magnifying-glass-chart text-emerald-400"></i> IDA Pro
+                        </button>
+                        <button type="button" onclick="showBadgeInfo('ARM64', 'Arquitectura de 64 bits de bajo consumo utilizada en smartphones modernos (Snapdragon, Dimensity) capaz de ejecutar código nativo recompilado.')" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-cyan-950/50 border border-slate-700 hover:border-cyan-400 text-xs font-mono text-cyan-300 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-microchip text-cyan-400"></i> ARM64
+                        </button>
+                        <button type="button" onclick="showBadgeInfo('Vulkan', 'API gráfica moderna de bajo nivel y alto rendimiento que permite comunicación directa con la GPU móvil sin sobrecarga de CPU.')" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-cyan-950/50 border border-slate-700 hover:border-cyan-400 text-xs font-mono text-cyan-300 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-fire text-cyan-400"></i> Vulkan
+                        </button>
+                        <button type="button" onclick="showBadgeInfo('SDL3', 'Simple DirectMedia Layer 3: capa multiplataforma moderna para gestionar entrada de mandos físicos, audio y ventanas nativas.')" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-emerald-950/50 border border-slate-700 hover:border-emerald-400 text-xs font-mono text-emerald-300 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-gamepad text-emerald-400"></i> SDL3
+                        </button>
+                        <button type="button" onclick="showBadgeInfo('Havok 2.0', 'Motor de física y colisiones clásico reconstruido para mantener intacta la jugabilidad y respuesta dinámica original.')" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-cyan-950/50 border border-slate-700 hover:border-cyan-400 text-xs font-mono text-cyan-300 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-cubes text-cyan-400"></i> Havok 2.0
+                        </button>
+                        <button type="button" onclick="showBadgeInfo('BYOG', 'Bring Your Own Game: estándar legal donde el usuario aporta los recursos (assets) extraídos de su propia copia original del juego.')" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-amber-950/50 border border-slate-700 hover:border-amber-400 text-xs font-mono text-amber-300 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved text-amber-400"></i> BYOG
+                        </button>
+                    </div>
+                    <!-- Visor dinámico de descripción de insignia -->
+                    <div id="badgeDetailBox" class="hidden mt-3 p-3.5 rounded-xl bg-slate-950/90 border border-cyan-500/30 text-xs sm:text-sm text-slate-300 flex items-start justify-between gap-4">
+                        <div>
+                            <span id="badgeDetailTitle" class="font-mono font-bold text-cyan-400 mr-2"></span>
+                            <span id="badgeDetailText"></span>
+                        </div>
+                        <button onclick="document.getElementById('badgeDetailBox').classList.add('hidden')" class="text-slate-500 hover:text-white">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. PILARES TÉCNICOS (3 TARJETAS) -->
+        <section id="pilares" class="space-y-8">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                <div>
+                    <span class="font-mono text-xs text-emerald-400 uppercase tracking-widest">// FUNDAMENTOS DEL PROCESO</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">Pilares Técnicos</h2>
+                </div>
+                <p class="text-sm text-slate-400 max-w-md">Cómo se transforma un binario legado en una aplicación nativa ultrarrápida.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Tarjeta 1 -->
+                <article class="group relative rounded-2xl bg-[#0d111a] border border-slate-800 hover:border-emerald-500/60 p-6 sm:p-7 transition-all duration-300 hover:-translate-y-1 shadow-lg hover:shadow-emerald-500/10 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-5 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-code-branch text-xl"></i>
+                        </div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="font-mono text-xs text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-md">01</span>
+                            <h3 class="text-lg font-bold text-white leading-snug">Decompilación y Recompilación Estática</h3>
+                        </div>
+                        <p class="text-sm text-slate-300 leading-relaxed">
+                            Traduce las instrucciones de consolas antiguas (como <span class="text-emerald-300 font-mono text-xs">x86</span> de Xbox Classic o <span class="text-emerald-300 font-mono text-xs">MIPS</span>) a código nativo compatible con procesadores modernos <span class="text-cyan-300 font-mono text-xs">ARM64</span> (Android), recreando el ejecutable original.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+                        <span>x86 / MIPS &rarr; ARM64</span>
+                        <span class="text-emerald-400">Binario Nativo</span>
+                    </div>
+                </article>
+
+                <!-- Tarjeta 2 -->
+                <article class="group relative rounded-2xl bg-[#0d111a] border border-slate-800 hover:border-cyan-500/60 p-6 sm:p-7 transition-all duration-300 hover:-translate-y-1 shadow-lg hover:shadow-cyan-500/10 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-5 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-gauge-high text-xl"></i>
+                        </div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="font-mono text-xs text-cyan-400 bg-cyan-500/10 px-2.5 py-0.5 rounded-md">02</span>
+                            <h3 class="text-lg font-bold text-white leading-snug">Rendimiento Nativo vs. Emulación</h3>
+                        </div>
+                        <p class="text-sm text-slate-300 leading-relaxed">
+                            Al eliminar la capa de virtualización y comunicarse directamente con el hardware del teléfono, alcanza <span class="text-cyan-300 font-semibold">60–120 FPS</span>, menor consumo de batería y soporte nativo para APIs como <span class="text-emerald-300 font-mono text-xs">Vulkan</span> y mandos físicos.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+                        <span>Sin Virtualización</span>
+                        <span class="text-cyan-400">60–120 FPS</span>
+                    </div>
+                </article>
+
+                <!-- Tarjeta 3 -->
+                <article class="group relative rounded-2xl bg-[#0d111a] border border-slate-800 hover:border-emerald-500/60 p-6 sm:p-7 transition-all duration-300 hover:-translate-y-1 shadow-lg hover:shadow-emerald-500/10 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400 mb-5 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-box-archive text-xl"></i>
+                        </div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="font-mono text-xs text-teal-400 bg-teal-500/10 px-2.5 py-0.5 rounded-md">03</span>
+                            <h3 class="text-lg font-bold text-white leading-snug">Preservación y Modding</h3>
+                        </div>
+                        <p class="text-sm text-slate-300 leading-relaxed">
+                            Permite rescatar clásicos descatalogados, corregir errores históricos y mantenerlos jugables en hardware actual bajo el modelo <span class="text-amber-300 font-semibold">Bring Your Own Game</span>.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+                        <span>Código Abierto</span>
+                        <span class="text-teal-400">Modelo BYOG</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- 3. SECCIÓN PORTS NATIVOS DESTACADOS -->
+        <section id="ports" class="space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+                <div>
+                    <span class="font-mono text-xs text-cyan-400 uppercase tracking-widest">// CASOS DE ÉXITO EN ANDROID &amp; ARM64</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1 flex items-center gap-2.5">
+                        <span>🎮 Ports Nativos Destacados</span>
+                    </h2>
+                </div>
+
+                <!-- Botón interactivo para alternar vista de comparativa técnica -->
+                <button id="toggleCompareBtn" onclick="toggleComparison()" class="self-start md:self-auto inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 text-xs sm:text-sm font-medium transition-all">
+                    <i class="fa-solid fa-table-columns"></i>
+                    <span id="toggleCompareText">Ver Tabla Comparativa</span>
+                </button>
+            </div>
+
+            <!-- Grid de 3 Tarjetas de Ports -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Port 1: Saga Halo -->
+                <div class="group rounded-3xl bg-gradient-to-b from-[#101726] to-[#0b0f18] border border-slate-800 hover:border-emerald-400/60 p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-xl">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-4">
+                            <span class="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-mono text-xs font-semibold">
+                                XBOX CLASSIC &rarr; ARM64
+                            </span>
+                            <span class="font-mono text-xs text-emerald-400 font-bold">60 FPS</span>
+                        </div>
+                        
+                        <h3 class="text-xl font-extrabold text-white mb-3 group-hover:text-emerald-300 transition-colors">
+                            Saga Halo (Halo CE &amp; Halo 2)
+                        </h3>
+                        
+                        <p class="text-sm text-slate-300 leading-relaxed mb-6">
+                            Decompilación nativa de Xbox Classic con gráficos OpenGL ES 3.0+ / Vulkan, físicas Havok 2.0 y controles mediante SDL3 a 60 FPS.
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Etiquetas técnicas -->
+                        <div class="flex flex-wrap gap-1.5">
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-cyan-300">OpenGL ES 3.0+</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-emerald-300">Vulkan</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-slate-300">Havok 2.0</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-slate-300">SDL3</span>
+                        </div>
+
+                        <!-- Botón desplegable de detalles técnicos -->
+                        <button onclick="togglePortDetails('details-halo')" class="w-full py-2.5 px-4 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-xs font-mono text-slate-300 hover:text-white flex items-center justify-between transition-colors">
+                            <span>Inspeccionar arquitectura</span>
+                            <i class="fa-solid fa-chevron-down text-emerald-400"></i>
+                        </button>
+                        <div id="details-halo" class="hidden p-3.5 rounded-xl bg-slate-950/90 border border-emerald-500/20 text-xs text-slate-400 space-y-1.5 font-mono">
+                            <p><strong class="text-emerald-400">Método:</strong> Decompilación nativa C/C++</p>
+                            <p><strong class="text-emerald-400">Físicas:</strong> Havok 2.0 recompilado</p>
+                            <p><strong class="text-emerald-400">Input:</strong> Mapeo nativo SDL3</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Port 2: Conker: Live & Reloaded -->
+                <div class="group rounded-3xl bg-gradient-to-b from-[#101726] to-[#0b0f18] border border-slate-800 hover:border-cyan-400/60 p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-xl">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-4">
+                            <span class="px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 font-mono text-xs font-semibold">
+                                X86 &rarr; ARM64
+                            </span>
+                            <span class="font-mono text-xs text-cyan-400 font-bold">VULKAN 1.3</span>
+                        </div>
+                        
+                        <h3 class="text-xl font-extrabold text-white mb-3 group-hover:text-cyan-300 transition-colors">
+                            Conker: Live &amp; Reloaded
+                        </h3>
+                        
+                        <p class="text-sm text-slate-300 leading-relaxed mb-6">
+                            Recompilación estática (x86 a ARM64) de Xbox Classic ejecutando su remodelado gráfico completo sobre Vulkan 1.3.
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Etiquetas técnicas -->
+                        <div class="flex flex-wrap gap-1.5">
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-cyan-300">Recompilación Estática</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-emerald-300">ARM64</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-slate-300">Vulkan 1.3</span>
+                        </div>
+
+                        <!-- Botón desplegable de detalles técnicos -->
+                        <button onclick="togglePortDetails('details-conker')" class="w-full py-2.5 px-4 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-xs font-mono text-slate-300 hover:text-white flex items-center justify-between transition-colors">
+                            <span>Inspeccionar arquitectura</span>
+                            <i class="fa-solid fa-chevron-down text-cyan-400"></i>
+                        </button>
+                        <div id="details-conker" class="hidden p-3.5 rounded-xl bg-slate-950/90 border border-cyan-500/20 text-xs text-slate-400 space-y-1.5 font-mono">
+                            <p><strong class="text-cyan-400">Método:</strong> Traducción estática x86 &rarr; ARM64</p>
+                            <p><strong class="text-cyan-400">Render:</strong> Shaders y texturas HD en Vulkan 1.3</p>
+                            <p><strong class="text-cyan-400">Origen:</strong> Binario original Xbox Classic</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Port 3: Hollow Knight -->
+                <div class="group rounded-3xl bg-gradient-to-b from-[#101726] to-[#0b0f18] border border-slate-800 hover:border-teal-400/60 p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-xl">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-4">
+                            <span class="px-3 py-1 rounded-full bg-teal-500/15 border border-teal-500/30 text-teal-300 font-mono text-xs font-semibold">
+                                UNITY (C#) &rarr; APK
+                            </span>
+                            <span class="font-mono text-xs text-teal-400 font-bold">60–120 FPS</span>
+                        </div>
+                        
+                        <h3 class="text-xl font-extrabold text-white mb-3 group-hover:text-teal-300 transition-colors">
+                            Hollow Knight
+                        </h3>
+                        
+                        <p class="text-sm text-slate-300 leading-relaxed mb-6">
+                            Recompilación nativa de Unity (C#) a APK con rendimiento fluido de 60–120 FPS en Snapdragon y Dimensity.
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Etiquetas técnicas -->
+                        <div class="flex flex-wrap gap-1.5">
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-teal-300">Unity C#</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-emerald-300">APK Nativo</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-slate-300">Snapdragon</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-slate-300">Dimensity</span>
+                        </div>
+
+                        <!-- Botón desplegable de detalles técnicos -->
+                        <button onclick="togglePortDetails('details-hk')" class="w-full py-2.5 px-4 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-xs font-mono text-slate-300 hover:text-white flex items-center justify-between transition-colors">
+                            <span>Inspeccionar arquitectura</span>
+                            <i class="fa-solid fa-chevron-down text-teal-400"></i>
+                        </button>
+                        <div id="details-hk" class="hidden p-3.5 rounded-xl bg-slate-950/90 border border-teal-500/20 text-xs text-slate-400 space-y-1.5 font-mono">
+                            <p><strong class="text-teal-400">Método:</strong> Recompilación IL2CPP / Unity a ARM64</p>
+                            <p><strong class="text-teal-400">Tasa de cuadros:</strong> 60–120 FPS nativos</p>
+                            <p><strong class="text-teal-400">SoCs:</strong> Optimizado para Snapdragon y Dimensity</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla Comparativa Interactiva (Oculta por defecto, se muestra con el botón) -->
+            <div id="comparisonTableContainer" class="hidden rounded-2xl bg-[#0d111a] border border-cyan-500/30 overflow-hidden shadow-2xl">
+                <div class="p-4 sm:p-5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
+                    <h4 class="font-mono text-sm font-bold text-cyan-300 flex items-center gap-2">
+                        <i class="fa-solid fa-microchip"></i> Matriz Técnica de Ports Nativos
+                    </h4>
+                    <span class="text-xs text-slate-400 font-mono">ARM64 / Android</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-400 font-mono bg-slate-950/50">
+                                <th class="py-3.5 px-4">Título</th>
+                                <th class="py-3.5 px-4">Técnica</th>
+                                <th class="py-3.5 px-4">API Gráfica</th>
+                                <th class="py-3.5 px-4">Sistemas / Extras</th>
+                                <th class="py-3.5 px-4">Rendimiento</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/70 text-slate-300">
+                            <tr class="hover:bg-slate-900/40">
+                                <td class="py-3.5 px-4 font-bold text-white">Saga Halo (CE &amp; 2)</td>
+                                <td class="py-3.5 px-4 font-mono text-emerald-300">Decompilación nativa (Xbox)</td>
+                                <td class="py-3.5 px-4">OpenGL ES 3.0+ / Vulkan</td>
+                                <td class="py-3.5 px-4">Havok 2.0 + SDL3</td>
+                                <td class="py-3.5 px-4 font-mono text-emerald-400">60 FPS</td>
+                            </tr>
+                            <tr class="hover:bg-slate-900/40">
+                                <td class="py-3.5 px-4 font-bold text-white">Conker: Live &amp; Reloaded</td>
+                                <td class="py-3.5 px-4 font-mono text-cyan-300">Recompilación estática (x86&rarr;ARM64)</td>
+                                <td class="py-3.5 px-4">Vulkan 1.3</td>
+                                <td class="py-3.5 px-4">Remodelado gráfico completo</td>
+                                <td class="py-3.5 px-4 font-mono text-cyan-400">Nativo ARM64</td>
+                            </tr>
+                            <tr class="hover:bg-slate-900/40">
+                                <td class="py-3.5 px-4 font-bold text-white">Hollow Knight</td>
+                                <td class="py-3.5 px-4 font-mono text-teal-300">Recompilación nativa Unity (C#)</td>
+                                <td class="py-3.5 px-4">Nativa Android (APK)</td>
+                                <td class="py-3.5 px-4">Snapdragon &amp; Dimensity</td>
+                                <td class="py-3.5 px-4 font-mono text-teal-400">60–120 FPS</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. BANNER / CAJA DESTACADA DE AVISO DE SEGURIDAD Y LEGALIDAD (BYOG) -->
+        <section id="legal" class="relative rounded-3xl bg-gradient-to-r from-amber-950/40 via-[#141210] to-[#0d111a] border border-amber-500/40 p-6 sm:p-8 lg:p-10 shadow-xl overflow-hidden">
+            <div class="absolute -right-6 -bottom-6 text-amber-500/5 text-9xl pointer-events-none">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+
+            <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-6">
+                <div class="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0 shadow-lg shadow-amber-500/10">
+                    <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                </div>
+
+                <div class="space-y-2 flex-1">
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <h2 class="text-lg sm:text-xl font-bold text-amber-300">
+                            Aviso de Seguridad y Legalidad (BYOG)
+                        </h2>
+                        <span class="px-2.5 py-0.5 rounded-md bg-amber-500/20 border border-amber-500/30 text-amber-200 font-mono text-xs">
+                            BRING YOUR OWN GAME
+                        </span>
+                    </div>
+                    <p class="text-sm sm:text-base text-slate-200 leading-relaxed">
+                        Descarga ejecutables únicamente desde sitios autorizados y repositorios oficiales (como <span class="text-white font-semibold underline decoration-amber-400/60">GitHub</span>) para evitar malware. Estos proyectos operan bajo el estándar <strong class="text-amber-300">Bring Your Own Game</strong>: debes usar tu propia copia legal para extraer los archivos necesarios del juego.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="relative z-10 border-t border-slate-800/80 bg-[#05070b] py-8 mt-12">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-mono">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>LA ERA DE LOS PORTS // INGENIERÍA INVERSA &amp; PRESERVACIÓN</span>
+            </div>
+            <div>
+                <span>ARM64 • VULKAN • GHIDRA • IDA PRO • SDL3 • BYOG</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lógica Interactiva y Copiado HTML para Webnode -->
+    <script>
+        // Mostrar información al hacer clic en las insignias técnicas
+        function showBadgeInfo(title, description) {
+            const box = document.getElementById('badgeDetailBox');
+            const titleEl = document.getElementById('badgeDetailTitle');
+            const textEl = document.getElementById('badgeDetailText');
+
+            titleEl.textContent = `[${title}]`;
+            textEl.textContent = description;
+            box.classList.remove('hidden');
+        }
+
+        // Desplegar/ocultar detalles individuales de cada port
+        function togglePortDetails(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.toggle('hidden');
+            }
+        }
+
+        // Alternar visibilidad de la tabla comparativa
+        function toggleComparison() {
+            const table = document.getElementById('comparisonTableContainer');
+            const btnText = document.getElementById('toggleCompareText');
+            const isHidden = table.classList.contains('hidden');
+
+            if (isHidden) {
+                table.classList.remove('hidden');
+                btnText.textContent = 'Ocultar Tabla Comparativa';
+                table.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                table.classList.add('hidden');
+                btnText.textContent = 'Ver Tabla Comparativa';
+            }
+        }
+
+        // Mostrar notificación visual personalizada (sin usar alert)
+        function showToast(title, message) {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMessage').textContent = message;
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3500);
+        }
+
+        // Copiar el código HTML completo al portapapeles usando execCommand (compatible con iframes y Webnode)
+        function copyFullHtml() {
+            try {
+                const fullHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+                const textArea = document.createElement('textarea');
+                textArea.value = fullHtml;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-9999px';
+                textArea.style.top = '0';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                if (successful) {
+                    showToast('¡Código HTML copiado!', 'Pégalo directamente en un bloque HTML de Webnode.');
+                } else {
+                    showToast('No se pudo copiar automáticamente', 'Intenta seleccionar el código desde el editor.');
+                }
+            } catch (err) {
+                showToast('Error al copiar', 'Usa Ctrl+U o el editor para obtener el código fuente.');
+            }
+        }
+    </script>
+</body>
+</html>
